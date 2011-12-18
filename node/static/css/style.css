@@ -1,0 +1,44 @@
+body, p {
+	margin:0;
+	padding:0;
+}
+div.dcr {
+	float: left;
+	width: 45%;
+	border: solid 1px #333;
+	margin: .4em;
+}
+div.dcrheader > p.name {
+	width: 100%;
+	background-color: #efefef;
+	font-variant: small-caps;
+}
+div.dcrheader > p.name > span.close {
+	float:right;
+}
+
+div.state {
+	margin: .2em;
+}
+div.execformsheader {
+	width: 100%;
+	padding-top: 1em;
+	font-weight: bold;
+}
+
+div#create div.right h1 {
+	font-size: 110%;
+}
+div#create div.clear {
+	clear: both;
+}
+div#create div.left {
+	float: left;
+	width: 50%;
+}
+div#create div.right {
+	float: right;
+	width: 45%;
+}
+
+pre#parsed {display:none;}

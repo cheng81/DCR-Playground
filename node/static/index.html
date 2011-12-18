@@ -1,0 +1,251 @@
+<html>
+<head>
+	<title>DCR data event Playgroud</title>
+	<link rel="stylesheet" href="css/jquery-ui.css">
+	<link rel="stylesheet" href="css/style.css">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/jquery.json.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.js"></script>
+	<script type="text/javascript" src="js/jsrender.js"></script>
+	<!-- // <script type="text/javascript" src="js/right.js"></script> -->
+	<!-- // <script type="text/javascript" src="js/right-tabs.js"></script> -->
+	<script type="text/javascript" src="http://localhost:8899/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="js/dcrde.js"></script>
+	<script type="text/javascript" src="js/dcrui.js"></script>
+	<script type="text/javascript" src="js/lobrow.js"></script>
+	<script type="text/javascript">
+		(function($){$(document).ready(function(){
+			$('div#create').hide()
+			$('input#togglecreate').click(function(ev){
+				ev.preventDefault()
+				$('div#create').toggle('fast')
+				return false
+			})
+			lobrow.onload(['./js/parser'],
+			function(dcrparser) {
+				$.dcrparser = dcrparser
+				$('form#createFrm').submit(function(ev) {
+					ev.preventDefault()
+					var text = $('textarea[name="dcr"]').val()
+					try {
+						var parsed = dcrparser.parse(text)
+						$('#parsed').text(JSON.stringify(parsed))
+					} catch(e) {
+						$('p#parseMsg').html(e.toString())
+						console.log('error',e)
+					}
+					$.frza.dcr.client.create(parsed)
+					return false
+				})
+			})
+		})})(jQuery)
+		// $(document).ready(function(){
+		// 	$('form#createfrm').submit(function(e){
+		// 		e.preventDefault()
+		// 		var text = $('#dcr').text
+		// 		var parsed = 
+		// 		return false
+		// 	})
+		// })
+	</script>
+	<script type="text/javascript">
+	jQuery.views.registerHelpers({
+		getEventName: function(v){return v[0]},
+		getEventData: function(v){return v[1]},
+		renderEventValues: function( vals ) {
+			var out = []
+			for(var i in vals) {
+				var str = '<span class="param">' + i + '</span>: <span class="value">' + vals[i] + '</span>'
+				out.push(str)
+			}
+			return out.join(',')
+		},
+		renderEvent: function( evt ) {
+			var out = evt[0] + ' - '//'<span class="name">' + evt[0] + '</span> - '
+			var vals = evt[1]
+			var tmp = []
+			for(var i in vals) {
+				//tmp.push('<span class="param">'+i+'</span>:<span class="value">'+vals[i]+'</span>')
+				tmp.push(i + ': ' + vals[i])
+			}
+			return out + tmp.join(',')
+		}
+	})
+	</script>
+	<script id="dcrTemplate" type="text/x-jquery-tmpl">
+		<div class="dcr" id="{{=name}}">
+			<div class="dcrheader">
+			<p class="name">{{=name}}
+			<span class="close"><input type="button" class="closedcr" name="{{=name}}" value="Exit" />
+			</p>
+			</div>
+			<div class="state" id="{{=name}}state">
+				<ul>
+					<li><a href="#{{=name}}executed">Executed</a></li>
+					<li><a href="#{{=name}}included">Included</a></li>
+					<li><a href="#{{=name}}responses">Responses</a></li>
+				</ul>
+				<div id="{{=name}}included"><ul class="included">
+					{{each state.included tmpl="#predicate"}}
+				</ul></div>
+				<div id="{{=name}}responses"><ul class="responses">
+					{{each state.responses tmpl="#predicate"}}
+				</ul></div>
+				<div id="{{=name}}executed"><ul class="executed">
+					{{each state.executed tmpl="#showevent"}}
+				</ul></div>
+			</div>
+			<div class="execforms">
+				<div class="execformsheader">Execute</div>
+				<dl class="frm" id="{{=name}}forms">
+					{{each params tmpl="#evtfrm"}}
+				</dl>
+			</div>
+		</div>
+	</script>
+	<script id="included" type="text/x-jquery-tmpl">
+		{{each included tmpl="#predicate"}}
+	</script>
+	<script id="responses" type="text/x-jquery-tmpl">
+		{{each responses tmpl="#predicate"}}
+	</script>
+	<script id="executed" type="text/x-jquery-tmpl">
+		{{each executed tmpl="#showevent"}}
+	</script>
+	<script id="__dcrTemplate" type="text/x-jquery-tmpl">
+		<div class="dcr" id="{{=name}}">
+			<div class="dcrheader">
+			<p class="name">{{=name}}
+			<span class="close"><input type="button" class="closedcr" name="{{=name}}" value="Exit" />
+			</p>
+			</div>
+			<div class="state">
+			<dl id="{{=name}}state">
+				<dt><a href="#">Included</a></dt>
+				<dd><ul class="included">
+					{{each state.included tmpl="#predicate"}}
+				</ul></dd>
+				<dt><a href="#">Responses</a></dt>
+				<dd><ul class="responses">
+					{{each state.responses tmpl="#predicate"}}
+				</ul></dd>
+				<dt><a href="#">Executed</a></dt>
+				<dd><ul class="executed">
+					{{each state.executed tmpl="#showevent"}}
+				</ul></dd>
+			</dl>
+			</div>
+			<div class="execforms">
+			<div class="execformsheader">Execute</div>
+			<div class="forms">
+			<dl class="frm" id="{{=name}}forms">
+				{{each params tmpl="#evtfrm"}}
+			</dl>
+			</div>
+		</div>
+	</script>
+	<script id="__dcrState" type="text/x-jquery-tmpl">
+	<dl>
+		<dt><a href="#">Included</a></dt>
+		<dd><ul class="included">
+			{{each included tmpl="#predicate"}}
+		</ul></dd>
+		<dt><a href="#">Responses</a></dt>
+		<dd><ul class="responses">
+			{{each responses tmpl="#predicate"}}
+		</ul></dd>
+		<dt><a href="#">Executed</a></dt>
+		<dd><ul class="executed">
+			{{each executed tmpl="#showevent"}}
+		</ul></dd>
+	</dl>
+	</script>
+	<script id="evtfrm" type="text/x-jquery-tmpl">
+		<dt><a href="#">{{= $ctx.getEventName($data)}}</a></dt>
+		<dd>
+			<form  class="execfrm" id="frm_{{=$view.parent.parent.data.name}}">
+			<input type="hidden" name="dcrid" value="{{=$view.parent.parent.data.name}}"/>
+			<input type="hidden" name="eventname" value="{{= $ctx.getEventName($data)}}"/>
+			{{#each $ctx.getEventData($data)}}
+				{{=$data}}: <input type="text" class="pvalue" name="{{=$data}}"/><br/>
+			{{/each}}
+			<input type="submit" name="{{= $ctx.getEventName($data)}}"/>
+			</form>
+		</dd>
+	</script>
+	<script id="predicate" type="text/x-jquery-tmpl">
+		<li class="predicate">
+			<span class="name">{{=name}}</span>: <span class="pred">{{=predicate}}</span>
+		</li>
+	</script>
+	<script id="showevent" type="text/x-jquery-tmpl">
+		<li>{{=$ctx.renderEvent($data)}}</li>
+	</script>
+	<script type="text/javascript">
+	(function($){
+		$(document).ready(function(){
+			$.frza.dcr.boot("http://localhost:8899",function(dcr){
+				console.log('boot')
+				$.frza.dcr.client = dcr
+				$.frza.dcr.ui.boot(dcr)
+			})
+		})
+	})(jQuery)
+	</script>
+</head>
+<body>
+	<input type="button" id="togglecreate" value="Toggle create DCR"/>
+<div id="create">
+	<div class="left">
+	<form id="createfrm">
+		<textarea cols="80" rows="20" name="dcr"></textarea>
+		<br/>
+		<input type="submit" value="Create">
+		<br/><br/>
+		<pre id="parsed"></pre>
+		<p id="parseMsg"></p>
+	</form>
+	</div>
+	<div class="right">
+		<h1>DCR language</h1>
+		<pre>
+	[name] process {
+		[modifiers][event]<[parameters]> {
+			includes: {[event]<[parameters]>,...}
+			excludes: ...
+			condition: ...
+			milestone: ...
+			response: ...
+		}
+		...
+	}
+	
+	modifiers:
+	 - !: initially required
+	 - +: initially included
+	
+	parameters:
+	 - $[name]
+		</pre>
+		<h1>Sample</h1>
+		<pre>
+	foo process {
+		+bar<$p1> {
+			includes{ baz<$p1> }
+		}
+		baz<$p2> {
+			condition{ bar<$p2> }
+			response{ qoox<$p2> }
+		}
+		+qoox<$p3> {
+			condition{ baz<$p3> }
+		}
+	}
+		</pre>
+	</div>
+	<div class="clear">&nbsp;</div>
+</div>
+<div id="dcrs"></div>
+<p id="evem" style="display:none"></p>
+</body>
+</html>

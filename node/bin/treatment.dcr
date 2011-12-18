@@ -1,0 +1,24 @@
+treatment process {
+	+prescribe<$id,$med> {
+		response {
+			sign<$id,$med>,
+			give<$id,$med>
+		}
+		includes{sign<$id,$med>}
+	}
+	sign<$id,$med> {
+		condition {prescribe<$id,$med>}
+		includes {
+			give<$id,$med>,
+			nottrust<$id,$med>
+		}
+	}
+	give<$id,$med> {
+		condition {sign<$id,$med>}
+		excludes {nottrust<$id,$med>}
+	}
+	nottrust<$id,$med> {
+		condition {sign<$id,$med>}
+		excludes {give<$id,$med>}
+	}
+}

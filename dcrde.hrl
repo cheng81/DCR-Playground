@@ -1,0 +1,2 @@
+-record (state, {executed = [], included = [], responses = [], accepting = true}).
+-record (dcr, {name = none, e = [], params = [], m = #state{}, conditions = [], responses = [], milestones = [], includes = [], excludes = []}).
