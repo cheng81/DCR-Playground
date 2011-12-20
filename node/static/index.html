@@ -184,7 +184,7 @@
 	<script type="text/javascript">
 	(function($){
 		$(document).ready(function(){
-			$.frza.dcr.boot("http://localhost:8899",function(dcr){
+			$.frza.dcr.boot(window.location.origin,function(dcr){
 				console.log('boot')
 				$.frza.dcr.client = dcr
 				$.frza.dcr.ui.boot(dcr)
